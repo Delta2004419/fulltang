@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>dashboard</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media="screen" href='/css/style.css'>
+    <link rel='stylesheet' type='text/css' media='print' href='/css/print.css'>
+    <link rel='stylesheet' type='text/css' media='screen' href='/fontawesome/css/all.min.css'>
+    <script type="text/javascript" src="/js/jquery.min.js" defer></script>
+    <script src='/js/script.js' defer></script>
+</head>
+<body>
+    <div class="preload"></div>
+    <div class="main">
+        
+        <%- include("leftBar") %>
+
+        <div class="right-container">
+            
+            <%- include("header") %>
+
+            <div class="content">
+                <div class="print">
+                    <div class="top-content">
+                        <p class="welcome">
+                            Bienvenu à la polyclinique Fulltang
+                        </p>
+                        <p>
+                           <strong>ID_FACTURE: </strong>  16166
+                        </p>
+                        <p>
+                            <strong>Date: </strong> 
+                            
+                            <% if(consultation[0].examens[0].result.date){ %>
+                                <%=consultation[0].examens[0].result.date.toLocaleDateString() %>
+                            <% }else { %>
+                                <%=new Date().toLocaleDateString() %>
+                            <% } %>
+                        </p>   
+                    </div>
+                    <div class="p-row">
+                        <h1>FACTURE DES EXAMENS</h1>
+                    </div>
+                    <div class="p-row">
+                        <p>Nom & prenom</p>
+                        <p><%=consultation[0].patient.nom+" "+consultation[0].patient.prenom %></p>
+                    </div>
+                    <div class="p-row">
+                        <p>Examen</p>
+                        <p><%=consultation[0].examens[0].nom %></p>
+                    </div>
+                    <div class="p-row">
+                        <p>Net a payer</p>
+                        <p><strong><%=consultation[0].examens[0].prix %> fcfa</strong></p>
+                    </div>
+                </div>  
+                <div class="p-div">
+                    <form method="post">
+                        <button onclick="window.print()">Imprimer <i class="fa-solid fa-print"></i></button>
+                    </form>  
+                </div>
+            </div>
+        </div>
+         
+    </div>
+    
+</body>
+</html>

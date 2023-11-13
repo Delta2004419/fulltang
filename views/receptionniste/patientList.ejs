@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>dashboard</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media='screen' href='/css/style.css'>
+    <link rel='stylesheet' type='text/css' media='screen' href='/fontawesome/css/all.min.css'>
+    <script type="text/javascript" src="/js/jquery.min.js" defer></script>
+    <script  src='/js/script.js' defer></script>
+    <script  src='/js/pagination.js' defer></script>
+</head>
+<body>
+    <div class="preload"></div>
+    <div class="main">
+        
+        <%- include("leftBar") %>
+
+        <div class="right-container">
+
+            <%- include("header") %>
+            
+            <div class="content">
+                <div class="top-content">
+                    <p class="welcome">
+                        Bienvenu à la polyclinique Fulltang
+                    </p>
+                    <p>
+                        Receptionniste profil
+                    </p>
+                    <p class="page-title">
+                        Liste des patients...
+                    </p>
+                    
+                </div>
+                <div class="patient-list">
+                    <% if(locals.message){ %>
+                        <div class="<%='notification '+type %>">
+                            <p>
+                                <%=message %>
+                            </p>
+                            <i class="fa-solid fa-xmark"></i>
+                        </div>
+                    <% } %>
+                    <div class="search">
+                        <div>
+                            <input type="text" placeholder="search" >
+                            <button><i class="fa-solid fa-magnifying-glass"></i></button>
+                        </div>
+                    </div>
+                    <div class="tableBloc">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nom</th>
+                                    <th>Prénom</th>
+                                    <th>Sexe</th>
+                                    <th>Téléphone</th>
+                                    <th>Adresse</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                <% patient.forEach(i=>{ %>
+                                    <tr>
+                                        <td><%=i.id%></td>
+                                        <td><%=i.nom%></td>
+                                        <td><%=i.prenom%></td>
+                                        <td><%=i.sexe%></td>
+                                        <td><%=i.telephone%></td>
+                                        <td><%=i.domicile%></td>
+                                        
+                                        <td>
+                                            <a class="tView" href=<%="/fulltang/V0/receptionnist/patient/"+i.id %> ><i class="fa-solid fa-eye "></i></a>
+                                            <a class="tEdit" href=<%="/fulltang/V0/receptionnist/edit/"+i.id %> ><i class="fa-solid fa-pen-to-square"></i></a>
+                                            <a class="tDel"><i class="fa-solid fa-trash-can "></i></a>
+                                            <a class="tEdit" href=<%="/fulltang/V0/receptionnist/new_consultation/"+i.id %> ><i class="fa-solid fa-stethoscope"></i></a>
+
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                                
+                               
+                                 
+                                
+                            </tbody>
+                        </table>
+                        <div class="pagination">
+                            <button class="prev"><<</button>
+                            <p>
+                                page   
+                                <span class="n-page">1</span>/<span class="t-page"></span >
+                            </p>
+                            <button class="next">>></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="mWindow" aria-hidden="true">
+                    <div class="modalBox" id="modalBox">
+                            <p>Voulez vous vraiment supprimer le patient Mr/Mme <span></span> </p>
+                            <div class="mDecision">
+                                <form method="post">
+                                    <input type="hidden" name="id"/>
+                                    <button type="submit">OUI</button>
+                                </form>
+                                <button>NON</button>
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+         
+    </div>
+    
+    <script>
+        
+           
+    </script>
+</body>
+</html>
