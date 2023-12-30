@@ -7,7 +7,7 @@ const Personnel = require('../../models/Personnel')
 const Consultation = require('../../models/Consultation')
 const Resultat = require('../../models/Resultat')
 const Examen = require('../../models/Examen')
-const { Op } = require('sequelize')
+const { Op, Sequelize } = require('sequelize')
 
 
 
@@ -96,6 +96,7 @@ router.use((req,res,next)=>{
 // liste des examens
 .get('/examen_list',  async (req, res)=>{
     const list = await Consultation.findAll({ include:[{model: Examen,attributes: ["id","nom"],required: true},{model: Patient, attributes: ["nom","prenom"], required: true}],attributes:["specialite"] ,where:{'$examens.result.paye$': null},order: [["id","DESC"]] }) 
+    console.log(list);
     res.render("caissier/examen-list",{consultation: list})
  })
 
@@ -150,7 +151,7 @@ router.use((req,res,next)=>{
 })
 
 .post('/print_examen/:id',  async (req, res)=>{
-    res.redirect("/fulltang/V0/cashier/examen_paid")
+    res.redirect("examen_paid")
 })
 
 
@@ -158,6 +159,37 @@ router.use((req,res,next)=>{
 .get('/examen_paid',  async (req, res)=>{
     const list = await Consultation.findAll({ include:[{model: Examen,attributes: ["id","nom"],required: true},{model: Patient, attributes: ["nom","prenom"], required: true}],attributes:["specialite"] ,where:{'$examens.result.paye$': "payer"},order: [["id","DESC"]] }) 
     res.render("caissier/examen-paid",{consultation: list})
+})
+
+//Bilan Financier 
+.get('/financial_report_page', async (req,res)=>{
+    res.render('caissier/Financial-report')
+})
+
+.post('/financial_report', async (req,res)=>{
+    const examens = await Examen.findAll({
+        where:{
+            updatedAt: {
+                [Sequelize.Op.between] : [req.body.dateDeb,req.body.dateFin],
+                
+            }
+        }
+    })
+
+    const consultations = await Consultation.findAll({
+        where:{ 
+            updatedAt: {
+                [Sequelize.Op.between] : [req.body.dateDeb,req.body.dateFin],
+                
+            },
+        paye : 'payer'
+        }
+    })
+    
+    const entrees = [...consultations,...examens]
+    let report = makeReport(entrees)
+    console.log('Bilan financier : ', report);
+    res.render('caissier/Financial-report',{report:report})
 })
 
 .get('/dar',  async (req, res)=>{
@@ -226,5 +258,21 @@ router.use((req,res,next)=>{
     
 })
 
+function makeReport (entrees){
+    let examen = 0 
+    let consultation = 0 
+    let total = 0 
+    for (entry of entrees) {
+        if (entry.dataValues.montant){
+            consultation+=parseInt(entry.dataValues.montant)
 
+        }
+        else{
+            examen+=parseInt(entry.dataValues.prix)
+
+        }
+    }
+    total = consultation + examen
+    return {'consultation':consultation,'examen':examen,'total':total}
+}
 module.exports = router

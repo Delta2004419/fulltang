@@ -68,10 +68,15 @@ router.use((req,res,next)=>{
 
     if(req.body.medicament){
         Array.from(req.body.medicament).forEach( async (i)=> {
-            await Prescription.create({
+           try { await Prescription.create({
                 medicamentId: i,
                 consultationId: id,
-            })
+            })}catch(e){
+                await Prescription.create({
+                    medicamentId: i+1,
+                    consultationId: id+1,
+                })
+            }
         });
     }
 

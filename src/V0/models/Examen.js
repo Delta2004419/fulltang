@@ -12,6 +12,7 @@ Examen.init({
     prix:{
         type: DataTypes.INTEGER        
     },
+    
     libelle:{
         type: DataTypes.TEXT        
     },
