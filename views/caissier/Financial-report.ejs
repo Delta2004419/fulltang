@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>dashboard</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media='screen' href='/css/style.css'>
+    <link rel='stylesheet' type='text/css' media='screen' href='/css/bootstrap.min.css'>
+    <link rel='stylesheet' type='text/css' media='screen' href='/fontawesome/css/all.min.css'>
+    <script type="text/javascript" src="/js/jquery.min.js" defer></script>
+    <script src='/js/script.js' defer></script>
+    <script src='/js/pagination.js' defer></script>
+    <script type="text/javascript" src='/static/js/chart.js' defer></script>
+</head>
+
+<body>
+    <div class="preload"></div>
+    <div class="main">
+
+        <%- include("leftBar") %>
+
+            <div class="right-container">
+
+                <%- include("header") %>
+
+                    <div class="content">
+
+                        <!-- Onglets pour basculer entre les pages de contenu -->
+                        <div class="tabs">
+                            <button class="tablink active" onclick="openPage('page1')">Statisques Générales de
+                                l'hôpital</button>
+                            <button class="tablink" onclick="openPage('page2')">Faire un Bilan personnalisé</button>
+                        </div>
+
+                        <!-- Contenu de la page 1 -->
+                        <div id="page2" class="tabcontent" style="display: none;">
+                            <div class="search">
+                                <p class="page-title">
+                                    Effectuer un bilan personnalisé
+                                </p>
+                            </div>
+                            <div class="table-responsive">
+                                <% try { if (report) { %>
+                                    <div class="content">
+                                        <p style="color: #4ec3b8; font-size: x-large;"> Bilan Financier Du <%= dateDeb
+                                                %> Au <%= dateFin %>
+                                        </p>
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Bilan des Consultations</th>
+                                                    <th>Bilan des Examens</th>
+                                                    <th>Bilan Total</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <%= report.consultation+' FCFA' %>
+                                                    </td>
+                                                    <td>
+                                                        <%= report.examen+' FCFA' %>
+                                                    </td>
+                                                    <td>
+                                                        <%= report.total+' FCFA' %>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <% } } catch(error) { %>
+                                        <form action="/fulltang/V0/cashier/financial_report" method="post">
+                                            <div class="form">
+                                                <p style="color: #4ec3b8; font-size: 130%;">Précisez la période dont
+                                                    vous souhaitez obtenir le bilan financier</p>
+                                                <label for="dateDeb"> Du :</label>
+                                                <input type="date" class="form-control" name="dateDeb" id="dateDeb">
+                                                <label for="dateFin"> jusqu'au :</label>
+                                                <input type="date" name="dateFin" id="dateFin">
+                                                <input type="submit" value="Calculer" class="btn btn-block btn-primary">
+                                            </div>
+                                        </form>
+                                        <% } %>
+                                            <div class="tableBloc">
+                                                <div class="pagination">
+                                                    <button class="prev">
+                                                        <<< /button>
+                                                            <p>
+                                                                page
+                                                                <span class="n-page">1</span>/<span
+                                                                    class="t-page"></span>
+                                                            </p>
+                                                            <button class="next">>></button>
+                                                </div>
+                                            </div>
+                            </div>
+                        </div>
+
+                        <!-- Contenu de la page 2 -->
+                        <div id="page1" class="tabcontent" style="display: block;">
+                            <div class="search">
+                                <p class="page-title">
+                                    Statisques Générales De l'Hôpital
+                                </p>
+                            </div>
+                            <div class="table-responsive">
+                                <div id="gen-stat-container">
+                                    <div class="gen-stat">
+                                        <div>
+                                            <p class="first-text">total des entrées</p>
+                                            <p class="second-text">55444$</p>
+                                            <i class='fas fa-hand-holding-usd' style='font-size:24px'></i>
+                                        </div>
+                                    </div>
+                                    <div class="gen-stat">
+                                        <div>
+                                            <p class="first-text">total des entrées</p>
+                                            <p class="second-text">55444$</p>
+                                            <i class='fas fa-coins' style='font-size:24px'></i>
+                                        </div>
+                                    </div>
+                                    <div class="gen-stat">
+                                        <div>
+                                            <p class="first-text">total des entrées</p>
+                                            <p class="second-text">55444$</p>
+                                            <i class='fas fa-ambulance' style='font-size:24px'></i>
+                                        </div>
+                                    </div>
+                                    <div class="gen-stat">
+                                        <div>
+                                            <p class="first-text">total des entrées</p>
+                                            <p class="second-text">55444$</p>
+                                            <i class='fas fa-plus-square' style='font-size:24px'></i>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="courbe">
+                                    <canvas id="myChart" width="600" height="400"></canvas>
+
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+            </div>
+
+    </div>
+
+    <script>
+        function openPage(pageName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tablink");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].classList.remove("active");
+            }
+            document.getElementById(pageName).style.display = "block";
+            event.currentTarget.classList.add("active");
+        }
+
+
+        // Données pour les deux courbes
+        var labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
+        var data1 = [10, 20, 15, 25, 20, 30];
+        var data2 = [15, 25, 20, 30, 25, 35];
+
+        // Configuration du graphique
+        var Chart = require('chart')
+        var ctx = document.getElementById('myChart').getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Courbe 1',
+                    data: data1,
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)', // Zone colorée sous la courbe 1
+                    borderWidth: 2
+                }, {
+                    label: 'Courbe 2',
+                    data: data2,
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)', // Zone colorée sous la courbe 2
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                scales: {
+                    x: {
+                        display: true,
+                        title: {
+                            display: true,
+                            text: 'Mois'
+                        }
+                    },
+                    y: {
+                        display: true,
+                        title: {
+                            display: true,
+                            text: 'Valeur'
+                        }
+                    }
+                }
+            }
+        });
+
+
+    </script>
+
+</body>
+
+</html>

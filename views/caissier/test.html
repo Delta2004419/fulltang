@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exemple de tableau de bord avec graphique</title>
+    <!-- Inclure la bibliothèque Chart.js localement -->
+    <script src="chart.min.js"></script>
+    <style>
+        /* Styles CSS pour le tableau de bord */
+        .dashboard {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .dashboard-item {
+            text-align: center;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            width: 200px;
+            background-color: #f9f9f9;
+        }
+
+        .dashboard-item img {
+            max-width: 100px;
+            max-height: 100px;
+        }
+
+        #myChart {
+            max-width: 600px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="dashboard-item">
+            <p>Total entrées</p>
+            <p>5000$</p>
+            <img src="../../static/image/image/finance.jpeg" alt="">
+        </div>
+        <div class="dashboard-item">
+            <p>entrées du mois</p>
+            <p>10000$</p>
+            <img src="../../static/image/image/finance.jpeg" alt="">
+        </div>
+        <div class="dashboard-item">
+            <p>Consultations mensuelles</p>
+            <p>5487$</p>
+            <img src="../../static/image/image/finance.jpeg" alt="">
+        </div>
+        <div class="dashboard-item">
+            <p>examens mensuels</p>
+            <p>54765$</p>
+            <img src="../../static/image/image/finance.jpeg" alt="">
+        </div>
+    </div>
+
+    <div class="chart-container">
+        <canvas id="myChart"></canvas>
+    </div>
+
+    <!-- Script JavaScript pour initialiser le graphique -->
+    <script>
+        // Données pour le graphique
+        const data = {
+            labels: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet'],
+            values: [5000, 10000, 5487, 8000, 12000, 9000, 15000] // Exemple de valeurs, à remplacer par vos propres données
+        };
+
+        // Récupérer le contexte du canvas
+        const ctx = document.getElementById('myChart').getContext('2d');
+
+        // Initialiser le graphique en ligne avec Chart.js
+        const myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: data.labels,
+                datasets: [{
+                    label: 'Ventes mensuelles',
+                    data: data.values,
+                    borderColor: 'blue',
+                    borderWidth: 1,
+                    fill: false
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

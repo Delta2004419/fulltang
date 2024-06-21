@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>dashboard</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media='screen' href='/css/style.css'>
+    <link rel='stylesheet' type='text/css' media='screen' href='/css/styleDashboard.css'>
+    <link rel='stylesheet' type='text/css' media='screen' href='/fontawesome/css/all.min.css'>
+    <script type="text/javascript" src="/js/jquery.min.js" defer></script>
+    <script  src='/js/script.js' defer></script>
+</head>
+<body>
+    <div class="preload"></div>
+    <div class="main">
+        
+      <%- include("leftBar") %>
+
+        <div class="right-container">
+
+          <%- include("header") %>
+            
+          <div class="content">
+            <!-- <div class="top-content">
+                <p class="welcome">
+                    Bienvenu à la polyclinique Fulltang
+                </p>
+                <p>
+                    Adiministrator profil
+                </p>
+                <p class="page-title">
+                    Liste du personnel...
+                </p>
+                
+            </div> -->
+            <div class="dashboard-content">
+              <div class="row">
+                <div class="col-4">
+                  <div class="card">
+                    <a href="/fulltang/V0/administrator/patient-list">
+                      <div>
+                        <h3>Patients</h3>
+                        <p class="count"><%=patients.length%></p>
+                      </div>
+                      <i class="fas fa-users"></i> <!-- Icône de liste de personnel -->
+                    </a>
+                  </div>
+                </div>
+                <div class="col-4">
+                  <div class="card">
+                    <a href="/fulltang/V0/administrator/consultation_history">
+                      <div>
+                        <h3>Consultations</h3>
+                        <% if (listConsultation !== null) { %>
+                          <p class="count"><%= listConsultation.length %></p>
+                        <% } else { %>
+                          <p class="count">0</p>
+                        <% } %>
+                      </div>
+                      <i class="fas fa-calendar-check"></i> <!-- Icône de liste de consultation -->
+                    </a>
+                  </div>
+                </div>
+                <div class="col-4">
+                  <div class="card">
+                    <a href="/fulltang/V0/administrator/consultation_historyRDV">
+                      <div>
+                        <h3>Rendez-vous a venir</h3>
+                        <% if (listRDV !== null) { %>
+                          <p class="count"><%= listRDV.length %></p>
+                        <% } else { %>
+                          <p class="count">0</p>
+                        <% } %>
+                      </div>
+                      <i class="fas fa-calendar-day"></i> <!-- Icône de liste de consultation -->
+                    </a>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-4">
+                  <div class="card">
+                    <a href="/fulltang/V0/administrator/personnel-list">
+                      <div>
+                        <h3>Personnels</h3>
+                        <p class="count"><%=personnel.length%></p>
+                      </div>
+                      <i class="fas fa-users"></i> <!-- Icône de liste de personnel -->
+                    </a>
+                  </div>
+                </div>
+                <div class="col-4">
+                  <div class="card">
+                    <h3>Rendez-vous</h3>
+                    <p class="count">28</p>
+                  </div>
+                </div>
+                <div class="col-4">
+                  <div class="card">
+                    <h3>Rapports</h3>
+                    <p class="count">12</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-8">
+                <div class="card" style="height: 500px;">
+                  <h3>Statistiques des patients</h3>
+                  <canvas id="patientChart" width="1000px"></canvas>
+                </div>
+              </div>
+              <div class="row rowCard">
+                <div class="col-8 paddingMedoc">
+                  <div class="card" style="height: 500px;">
+                    <h3>Statistiques des medicaments</h3>
+                    <canvas id="medicamentChart" width="1000px"></canvas>
+                  </div>
+                </div>
+                <div class="col-4">
+                  <div class="row">
+                    <div class="col-12">
+                      <div class="card" style="height: 240px;">
+                        <h3>Médicaments arrivant a expiration</h3>
+                        <canvas id="medicamentExpireChart"></canvas>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-12">
+                      <div class="card" style="height: 240px;">
+                        <h3>Statistiques des médicaments</h3>
+                        <canvas id="medicamentChart"></canvas>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row rowCard">
+                <div class="col-4">
+                  <div class="row">
+                    <div class="col-12">
+                      <div class="card" style="height: 240px;">
+                        <h3>Statistiques des entrees</h3>
+                        <canvas id="medicamentChart"></canvas>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-12">
+                      <div class="card" style="height: 240px;">
+                        <h3>Statistiques des médicaments</h3>
+                        <canvas id="medicamentChart"></canvas>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-8 paddingMedoc">
+                  <div class="card" style="height: 500px;">
+                    <h3>Statistiques des entrees</h3>
+                    <canvas id="entreesChart" width="1000px"></canvas>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+      </div>
+         
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      const countJson = '<%- JSON.stringify(annualCounts) %>'
+      const medicamentsJson = '<%- JSON.stringify(medicaments) %>'
+      let medicamentsExpireJson = '<%- JSON.stringify(medicamentsExpire) %>'
+      let entreesJSON = '<%- JSON.stringify(monthlyTotals) %>'
+      let count =JSON.parse(countJson)
+      let medicaments = JSON.parse(medicamentsJson)
+      let medicamentsExpire = JSON.parse(medicamentsExpireJson)
+      let entrees = JSON.parse(entreesJSON)
+      console.log(entrees)
+      let nomsMedicaments = [];
+      let quantiteMedicaments = [];
+      let nomsMedicamentsExpire = [];
+      let quantiteMedicamentsExpire = [];
+      for (let i = 0; i < medicaments.length; i++) {
+        nomsMedicaments.push(medicaments[i].nom);
+        quantiteMedicaments.push(medicaments[i].nombre);
+      }
+      for (let i = 0; i < medicamentsExpire.length; i++) {
+        nomsMedicamentsExpire.push(medicamentsExpire[i].nom);
+        quantiteMedicamentsExpire.push(medicamentsExpire[i].nombre);
+      }
+      window.addEventListener('load', function() {
+        // Création du graphique des statistiques des patients
+        const ctx = document.getElementById('patientChart').getContext('2d');
+        const patientChart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'juillet', 'aout', 'septembre', 'octobre', 'novembre', 'decembre'],
+            datasets: [{
+              label: 'Nombre de patients',
+              data: count,
+              backgroundColor: '#58a8c9',
+              borderColor: '#2c3e50',
+              borderWidth: 0.5
+            }]
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true,
+                stepSize: 1, // Utiliser des graduations entières
+                precision: 0 // Afficher les valeurs sans décimales
+              }
+            }
+          }
+        });
+    
+        const mchart = document.getElementById('medicamentChart').getContext('2d');
+        const medicamentChart = new Chart(mchart, {
+          type: 'bar',
+          data: {
+          labels: nomsMedicaments,
+          datasets: [{
+            label: 'Nombre de medicaments',
+            data: quantiteMedicaments,
+            backgroundColor: function (context) {
+              const quantite = context.dataset.data[context.dataIndex];
+              return quantite <= 10 ? 'red' : '#58a8c9';
+            },
+            borderColor: '#2c3e50',
+            borderWidth: 0.5
+          }]
+        },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true,
+                stepSize: 1, // Utiliser des graduations entières
+                precision: 0 // Afficher les valeurs sans décimales
+              }
+            }
+          }
+        });
+
+        const mEchart = document.getElementById('medicamentExpireChart').getContext('2d');
+        const medicamentExpireChart = new Chart(mEchart, {
+          type: 'pie',
+          data: {
+            labels: nomsMedicamentsExpire,
+            datasets: [{
+              label: 'Nombre de médicaments',
+              data: quantiteMedicamentsExpire,
+              backgroundColor: function (context) {
+                const quantite = context.dataset.data[context.dataIndex];
+                return quantite <= 10 ? 'red' : '#58a8c9';
+              },
+              borderColor: '#2c3e50',
+              borderWidth: 0.5
+            }]
+          },
+          options: {
+            responsive: false, // Désactiver le redimensionnement automatique
+            maintainAspectRatio: false, // Désactiver le maintien du ratio d'aspect
+            plugins: {
+              title: {
+                display: true,
+                // text: 'Médicaments expirés',
+                fontSize: 18 // Augmenter la taille du titre
+              },
+              legend: {
+                display: true,
+                position: 'right',
+                labels: {
+                  fontSize: 24 // Augmenter la taille de la légende
+                }
+              },
+              datalabels: {
+                display: false
+              }
+            },
+            scales: {
+              y: {
+                display: false
+              },
+              x: {
+                display: false
+              }
+            }
+          }
+        });
+
+        const Etx = document.getElementById('entreesChart').getContext('2d');
+        const entreesChart = new Chart(Etx, {
+          type: 'bar',
+          data: {
+            labels: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'juillet', 'aout', 'septembre', 'octobre', 'novembre', 'decembre'],
+            datasets: [{
+              label: 'Entree',
+              data: entrees,
+              backgroundColor: '#58a8c9',
+              borderColor: '#2c3e50',
+              borderWidth: 0.5
+            }]
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true,
+                stepSize: 1, // Utiliser des graduations entières
+                precision: 0 // Afficher les valeurs sans décimales
+              }
+            }
+          }
+        });
+    });
+    </script>
+</body>
+</html>

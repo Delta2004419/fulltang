@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset='utf-8'>
+  <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+  <title>dashboard</title>
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
+  <link rel='stylesheet' type='text/css' media='screen' href='/css/style.css'>
+  <link rel='stylesheet' type='text/css' media='screen' href='/css/styleDashboard.css'>
+  <link rel='stylesheet' type='text/css' media='screen' href='/fontawesome/css/all.min.css'>
+  <script type="text/javascript" src="/js/jquery.min.js" defer></script>
+  <script src='/js/script.js' defer></script>
+</head>
+
+<body>
+  <div class="preload"></div>
+  <div class="main">
+
+    <%- include("leftBar") %>
+
+      <div class="right-container">
+
+        <%- include("header") %>
+
+          <div class="content">
+            <!-- <div class="top-content">
+                    <p class="welcome">
+                        Bienvenu à la polyclinique Fulltang
+                    </p>
+                    <p>
+                        Adiministrator profil
+                    </p>
+                    <p class="page-title">
+                        Liste du personnel...
+                    </p>
+                    
+                </div> -->
+            <div class="dashboard-content">
+              <div class="row">
+                <div class="col-4">
+                  <div class="card">
+                    <h3>Nombre medicaments</h3>
+                    <p class="count"><%= nomsMedicaments.length %></p>
+                  </div>
+                </div>
+                <div class="col-4">
+                  <div class="card">
+                    <h3>Rendez-vous</h3>
+                    <p class="count">28</p>
+                  </div>
+                </div>
+                <div class="col-4">
+                  <div class="card">
+                    <h3>Rapports</h3>
+                    <p class="count">12</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <div class="card" style="height: 500px;">
+                  <h3>Statistiques des medicaments</h3>
+                  <canvas id="patientChart"></canvas>
+                </div>
+              </div>
+              <div class="col cmc">
+                <div class="card" style="height: 500px;">
+                  <h3>Statistiques des medicaments consommes</h3>
+                  <canvas id="consommationMEdocChart"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+
+      </div>
+  </div>
+
+  </div>
+  <script>
+    const medicamentsJson = '<%- JSON.stringify(medicaments) %>'
+    const medicaments = JSON.parse(medicamentsJson)
+    let nomsMedicaments = [];
+    let quantiteMedicaments = [];
+    for (let i = 0; i < medicaments.length; i++) {
+      nomsMedicaments.push(medicaments[i].nom);
+      quantiteMedicaments.push(medicaments[i].nombre);
+    }
+    console.log(nomsMedicaments)
+    window.addEventListener('load', function () {
+      // Création du graphique des statistiques des patients
+      const ctx = document.getElementById('patientChart').getContext('2d');
+      const cmc = document.getElementById('consommationMEdocChart').getContext('2d');
+      const patientChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: nomsMedicaments,
+          datasets: [{
+            label: 'Nombre de medicaments',
+            data: quantiteMedicaments,
+            backgroundColor: function (context) {
+              const quantite = context.dataset.data[context.dataIndex];
+              return quantite <= 10 ? 'red' : '#58a8c9';
+            },
+            borderColor: '#2c3e50',
+            borderWidth: 0.5
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+
+      const consommationMEdocChart = new Chart(cmc, {
+        type: 'bar',
+        data: {
+          labels: ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'],
+          datasets: [{
+            label: 'Nombre de medicaments consommer par jour',
+            data: quantiteMedicaments,
+            backgroundColor: '#58a8c9',
+            borderColor: '#2c3e50',
+            borderWidth: 0.5
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    });
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- <script src="/js/scripts.js"></script> -->
+</body>
+
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>dashboard</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media='screen' href='/css/style.css'>
+    <link rel='stylesheet' type='text/css' media='screen' href='/fontawesome/css/all.min.css'>
+    <script type="text/javascript" src="/js/jquery.min.js" defer></script>
+    <script src='/js/script.js' defer></script>
+</head>
+<body>
+    <div class="preload"></div>
+    <div class="main">
+        
+        <%- include("leftBar") %>
+
+        <div class="right-container">
+            
+            <%- include("header") %>
+
+            <div class="content">
+                <!-- <div class="top-content">
+                    <p class="welcome">
+                        Bienvenu à la polyclinique Fulltang
+                    </p>
+                    <p>
+                        Administrator profil
+                    </p>
+                    <p class="page-title">
+                        enregistrer un medicament...
+                    </p>
+                </div> -->
+                <div class="search">
+                    <p class="page-title">
+                        Enregistrer un medicament
+                    </p>
+                </div>
+                <form class="model-form" method="post" enctype="multipart/form-data">
+                    <div class="model-title">
+                        Ajouter un médicament
+                    </div>
+                    
+                    <div class="sigle-row">
+                        <div>
+                            <label>Nom</label>
+                            <input class="focus" type="text" name="nom" required/>
+                        </div>
+                        <div>
+                            <label>Description</label>
+                            <input class="focus" type="text" name="description" required/>
+                        </div>
+                        <div>
+                            <label>Prix</label>
+                            <input class="focus" type="number" name="prix" required/>
+                        </div>
+                    </div>
+    
+                    <div class="sigle-row">
+                        <div>
+                            <label>Catégorie</label>
+                            <input class="focus" type="text" name="categorie" required/>
+                        </div>
+                        <div>
+                            <label>Date d'expiration</label>
+                            <input class="focus" type="date" name="expiration" required/>
+                        </div>
+                        <div class="image-upload">
+                            <label for="image-input">Sélectionnez une image :</label>
+                            <input type="file" id="image-input" name="image" accept="image/*">
+                            <p id="image-path"></p>
+                        </div>
+                        <div>
+                            <label>Nombre</label>
+                            <input class="focus" type="number" name="nombre" required/>
+                        </div>
+                    </div>
+    
+                    <div class="image-preview">
+                        <img id="preview-image" src="#" alt="Aperçu de l'image" style="max-width: 200px; display: none;">
+                    </div>
+                     
+                    <input  type="submit" value="Enregistrer"/>
+                </form>
+            </div>
+        </div>
+         
+    </div>
+</body>
+</html>

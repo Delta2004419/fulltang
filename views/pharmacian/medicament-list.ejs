@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>dashboard</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel="stylesheet" href="/css/styleMedoc.css">
+    <link rel='stylesheet' type='text/css' media='screen' href='/css/style.css'>
+    <link rel='stylesheet' type='text/css' media='screen' href='/fontawesome/css/all.min.css'>
+    <script type="text/javascript" src="/js/jquery.min.js" defer></script>
+    <script src='/js/script.js' defer></script>
+    <script src='/js/pagination.js' defer></script>
+</head>
+
+<body>
+    <div class="preload"></div>
+    <div class="main">
+
+        <%- include("leftBar") %>
+
+            <div class="right-container">
+
+                <%- include("header") %>
+
+                    <div class="content">
+                        <div class="patient-list">
+                            <% if(locals.message){ %>
+                                <div class="<%='notification '+type %>">
+                                    <p>
+                                        <%=message %>
+                                    </p>
+                                    <i class="fa-solid fa-xmark"></i>
+                                </div>
+                                <% } %>
+
+                                    <div class="header">
+                                        <h1>Nos Médicaments</h1>
+                                        <div class="categories-container">
+                                            <div class="category-buttons"></div>
+                                            <div class="panier-icon">
+                                                <i class="fas fa-shopping-cart"></i>
+                                                <span class="panier-count">0</span>
+                                            </div>
+                                        </div>
+                                        <div class="search">
+                                            <h1></h1>
+                                            <div>
+                                                <input type="text" placeholder="search">
+                                                <button><i class="fa-solid fa-magnifying-glass"></i></button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <main>
+                                        <div class="medicaments-container">
+                                            <button class="prev-btn"><i class="fas fa-chevron-left"></i></button>
+                                            <div class="medicaments-wrapper">
+                                                <div class="medicaments grid-container"></div>
+                                            </div>
+                                            <button class="next-btn"><i class="fas fa-chevron-right"></i></button>
+                                        </div>
+
+                                        <div class="panier-container" style="display: none;">
+                                            <h2>Votre panier</h2>
+                                            <div class="panier-wrapper">
+                                                <table id="panier-table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Médicament</th>
+                                                            <th>Prix</th>
+                                                            <th>Quantité</th>
+                                                            <th>Total</th>
+                                                            <th></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="panier-body"></tbody>
+                                                </table>
+                                                <div class="panier-total">
+                                                    <p><span id="panier-total-amount"></span></p>
+                                                    <button class="panier-checkout">Passer la commande</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </main>
+                        </div>
+                    </div>
+            </div>
+
+    </div>
+    <script>
+        const medicamentsJson = '<%- JSON.stringify(medicaments) %>'
+        const medicaments = JSON.parse(medicamentsJson)
+        //console.log(medicaments)
+        const medicamentsContainer = document.querySelector(".medicaments");
+        const prevBtn = document.querySelector(".prev-btn");
+        const nextBtn = document.querySelector(".next-btn");
+        const categoriesContainer = document.querySelector(".categories-container");
+        const panierContainer = document.querySelector(".panier-container");
+        const panierIcon = document.querySelector(".panier-icon");
+        const panierCount = document.querySelector(".panier-count");
+        const panierBody = document.getElementById("panier-body");
+        const panierTotalAmount = document.getElementById("panier-total-amount");
+        const panierCheckoutBtn = document.querySelector(".panier-checkout"); // Déclaration de la variable panierCheckoutBtn
+
+        let currentIndex = 0;
+        let currentCategory = "Tous";
+        const itemsPerPage = 4;
+        let panier = [];
+        function displayMedicaments() {
+            medicamentsContainer.innerHTML = "";
+            let medicamentsToDisplay;
+            medicamentsToDisplay = currentCategory === "Tous" ? medicaments : medicaments.filter(medicament => medicament.categorie === currentCategory);
+            for (let i = currentIndex; i < currentIndex + itemsPerPage; i++) {
+                if (i >= medicamentsToDisplay.length) break;
+                const medicament = medicamentsToDisplay[i];
+                
+                const medicamentElement = createMedicamentElement(medicament);
+                medicamentsContainer.appendChild(medicamentElement);
+            }
+            updateButtonVisibility();
+        }
+
+        function createMedicamentElement(medicament) {
+            const medicamentElement = document.createElement("div");
+            medicamentElement.classList.add("medicament");
+
+            const imageElement = document.createElement("img");
+            imageElement.src = medicament.urlImage;
+            imageElement.alt = medicament.nom;
+
+            const nomElement = document.createElement("h3");
+            nomElement.textContent = medicament.nom;
+
+            const descriptionElement = document.createElement("p");
+            descriptionElement.textContent = medicament.description;
+
+            const prixElement = document.createElement("p");
+            prixElement.classList.add("prix");
+            prixElement.textContent = `${medicament.prix} €`;
+
+            const boutonElement = document.createElement("button");
+            boutonElement.textContent = "Ajouter au panier";
+            boutonElement.addEventListener("click", () => {
+                addToCart(medicament);
+            });
+
+            medicamentElement.appendChild(imageElement);
+            medicamentElement.appendChild(nomElement);
+            medicamentElement.appendChild(descriptionElement);
+            medicamentElement.appendChild(prixElement);
+            medicamentElement.appendChild(boutonElement);
+
+            return medicamentElement;
+        }
+
+        function updateButtonVisibility() {
+            const medicamentsToDisplay = currentCategory === "Tous" ? medicaments : medicaments.filter(medicament => medicament.categorie === currentCategory);
+            prevBtn.style.visibility = currentIndex === 0 ? "hidden" : "visible";
+            nextBtn.style.visibility = currentIndex + itemsPerPage >= medicamentsToDisplay.length ? "hidden" : "visible";
+        }
+
+        prevBtn.addEventListener("click", () => {
+            currentIndex = Math.max(currentIndex - itemsPerPage, 0);
+            displayMedicaments();
+        });
+
+        nextBtn.addEventListener("click", () => {
+            const medicamentsToDisplay = currentCategory === "Tous" ? medicaments : medicaments.filter(medicament => medicament.categorie === currentCategory);
+            currentIndex = Math.min(currentIndex + itemsPerPage, medicamentsToDisplay.length - itemsPerPage);
+            displayMedicaments();
+        });
+
+        const categories = ["Tous", ...new Set(medicaments.map(medicament => medicament.categorie))];
+
+        categories.forEach(category => {
+            const categoryBtn = document.createElement("button");
+            categoryBtn.classList.add("category-btn");
+            categoryBtn.textContent = category;
+            categoryBtn.addEventListener("click", () => {
+                currentCategory = category;
+                document.querySelectorAll(".category-btn").forEach(btn => btn.classList.remove("active"));
+                categoryBtn.classList.add("active");
+                currentIndex = 0;
+                displayMedicaments();
+            });
+            categoriesContainer.appendChild(categoryBtn);
+        });
+
+        // Ajouter cette ligne pour afficher tous les médicaments par défaut
+        document.querySelector(".category-btn").classList.add("active");
+        displayMedicaments();
+
+        function addToCart(medicament) {
+            //console.log(panier)
+            const existingItemIndex = panier.findIndex(item => item.nom === medicament.nom);
+            //console.log(item)
+            if (existingItemIndex !== -1) {
+                panier[existingItemIndex].quantite++;
+                panier[existingItemIndex].total = panier[existingItemIndex].prix * panier[existingItemIndex].quantite;
+            } else {
+                panier.push({
+                ...medicament,
+                quantite: 1,
+                total: medicament.prix
+                });
+            }
+            updatePanierDisplay();
+            updatePanierIcon();
+        }
+
+
+        function updatePanierDisplay() {
+            panierBody.innerHTML = "";
+            let totalAmount = 0;
+            panier.forEach(item => {
+                const row = document.createElement("tr");
+
+                const nomCell = document.createElement("td");
+                nomCell.textContent = item.nom;
+
+                const prixCell = document.createElement("td");
+                prixCell.textContent = `${item.prix} €`;
+
+                const quantiteCell = document.createElement("td");
+                const quantiteInput = document.createElement("input");
+                quantiteInput.type = "number";
+                quantiteInput.value = item.quantite;
+                quantiteInput.min = "1";
+                quantiteInput.addEventListener("change", () => {
+                    item.quantite = parseInt(quantiteInput.value);
+                    item.total = item.prix * item.quantite;
+                    updatePanierDisplay();
+                });
+                quantiteCell.appendChild(quantiteInput);
+
+                const totalCell = document.createElement("td");
+                totalCell.textContent = `${item.total} €`;
+
+                const supprimerCell = document.createElement("td");
+                const supprimerBtn = document.createElement("button");
+                supprimerBtn.textContent = "Supprimer";
+                supprimerBtn.addEventListener("click", () => {
+                    removeFromCart(item);
+                });
+                supprimerCell.appendChild(supprimerBtn);
+
+                row.appendChild(nomCell);
+                row.appendChild(prixCell);
+                row.appendChild(quantiteCell);
+                row.appendChild(totalCell);
+                row.appendChild(supprimerCell);
+                panierBody.appendChild(row);
+
+                totalAmount += item.total;
+            });
+            panierTotalAmount.textContent = `Total : ${totalAmount.toFixed(2)} €`;
+        }
+
+        function removeFromCart(item) {
+            const index = panier.indexOf(item);
+            if (index !== -1) {
+                panier.splice(index, 1);
+                updatePanierDisplay();
+                updatePanierIcon();
+            }
+        }
+
+        document.querySelectorAll(".medicament button").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const medicament = medicaments.find(m => m.nom === btn.previousElementSibling.textContent);
+                addToCart(medicament);
+            });
+        });
+
+        panierIcon.addEventListener("click", () => {
+            panierContainer.style.display = panierContainer.style.display === "none" ? "block" : "none";
+        });
+
+        function updatePanierIcon() {
+            panierCount.textContent = panier.length;
+        }
+
+        panierCheckoutBtn.addEventListener("click", async () => {
+            try {
+                // Créer un objet contenant les informations du panier
+                const panierData = {
+                    items: panier.map(item => ({
+                        nom: item.nom,
+                        quantite: item.quantite
+                    }))
+                };
+                console.log(panierData)
+
+                // Envoyer une requête POST au back-end
+                const response = await fetch("/fulltang/V0/pharmacian/medicament-list", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(panierData)
+                });
+
+                if (response.ok) {
+                    // La commande a été passée avec succès
+                    console.log("Commande passée !");
+
+                    // Vider le panier
+                    panier = [];
+                    updatePanierDisplay();
+                    updatePanierIcon();
+                } else {
+                    // Erreur lors de la commande
+                    console.error("Erreur lors de la commande :", await response.json());
+                }
+            } catch (error) {
+                console.error("Erreur lors de la requête :", error);
+            }
+        });
+
+        const searchInput = document.querySelector(".search input");
+        // const medicamentsContainer = document.querySelector(".medicaments");
+
+        searchInput.addEventListener("input", () => {
+            const searchTerm = searchInput.value.toLowerCase();
+            const filteredMedicaments = medicaments.filter(medicament =>
+                medicament.nom.toLowerCase().includes(searchTerm)
+            );
+
+            medicamentsContainer.innerHTML = "";
+            filteredMedicaments.forEach(medicament => {
+                const medicamentElement = createMedicamentElement(medicament);
+                medicamentsContainer.appendChild(medicamentElement);
+            });
+        });
+
+
+    </script>
+    <!-- <script src="/js/scriptMedoc.js"></script> -->
+</body>
+
+</html>

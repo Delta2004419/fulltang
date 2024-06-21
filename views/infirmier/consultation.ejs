@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>dashboard</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media='screen' href='/css/style.css'>
+    <link rel='stylesheet' type='text/css' media='screen' href='/fontawesome/css/all.min.css'>
+    <script type="text/javascript" src="/js/jquery.min.js" defer></script>
+    <script src='/js/script.js' defer></script>
+</head>
+
+<body>
+    <div class="preload"></div>
+    <div class="main">
+
+        <%- include("leftBar") %>
+
+        <div class="right-container">
+
+            <%- include("header") %>
+
+            <div class="content">
+                        <!-- <div class="top-content">
+                        <p class="welcome">
+                            Bienvenu à la polyclinique Fulltang
+                        </p>
+                        <p>
+                            <span><%=user.specialite %> </span> profil
+                        </p>
+                        <p class="page-title">
+                            nouvelle consultation...
+                        </p> -->
+                <div class="search">
+                    <p class="page-title">
+                        Nouvelle consultation
+                    </p>
+                    <!-- <h1></h1>
+                    <div>
+                        <input type="text" placeholder="search">
+                        <button><i class="fa-solid fa-magnifying-glass"></i></button>
+                    </div>     -->
+                </div>
+                <div>
+                    <form method="post" class="consultation form">
+                        <div class="formTitle">
+                            Mr/Mme
+                            <%=patient.nom+' '+patient.prenom %>
+                    
+                            <a class="voir-carnet">(voir carnet)</a>
+                    
+                        </div>
+                        <div class="segment">
+                            <div class="s-theme">
+                                Parametres
+                            </div>
+                            <div class="form-row">
+                                <div>
+                                    <label>Poids (en kg)</label>
+                                    <input class="focus" type="text" name="poids" required/>
+                                </div>
+                                <div>
+                                    <label>Temperature (en °c)</label>
+                                    <input class="focus" type="text" name="temperature" required/>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div>
+                                    <label>Tension arterielle systolique</label>
+                                    <input class="focus" type="text" name="tension_systolique"  required/>
+                                </div>
+                                <div>
+                                    <label>Tension arterielle diastolique</label>
+                                    <input class="focus" type="text" name="tension_diastolique"  required/>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div>
+                                    <label>Groupe sanguin</label>
+                                    <select class="focus" name="groupe_s">
+                                    <option selected disabled value="">Sélectionnez un groupe sanguin</option>
+                                    <% groupe_sanguin.forEach(groupe_s=> { %>
+                                        <option value="<%= groupe_s %>"><%= groupe_s %></option>
+                                    <% }) %>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label>Facteur rhesus</label>
+                                    <select class="focus" name="rhesus">
+                                    <option selected disabled value="">Sélectionnez un facteur rhesus</option>
+                                    <% rhesus.forEach(rhesus=> { %>
+                                        <option value="<%= rhesus %>"><%= rhesus %></option>
+                                    <% }) %>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="segment" id="section">
+                                <div class="s-regroup">
+                                    <div class="s-theme">
+                                        Medecin à prescrire
+                                    </div>
+                                    <div>
+                                        <button type="button" style="display: none;">New medecins</button>
+                                    </div>
+                                </div> 
+                                
+                                <div class="form-row">
+                                    <div>
+                                        <label>Médecin</label>
+                                        <select class="focus" name="medecin">
+                                            <option selected disabled value="">Sélectionnez un médecin</option>
+                                            <% medecins.forEach(medecin => { %>
+                                            <option value="<%= medecin.nom %>"><%= medecin.nom %> (<%= medecin.specialite %>)</option>
+                                            <% }) %>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label>Definir la date du rendez-vous</label>
+                                        <input class="focus" type="date" name="date_rdv" id="date_rdv" required />
+                                        <span id="date_error" style="color: red;"></span>                                    </div>
+                                    </div>
+                            </div>
+                        </div>
+                        <input class="submitButon"  type="submit" value="Enregistrer"/>
+                    </form>
+                    <div class="mWindow" aria-hidden="true">
+                   
+                    <div class="carnet" id="modalBox">
+                        <div class="exit">
+                            <i class="fa-solid fa-xmark "></i>
+                        </div>
+                        <div class="top-content">
+                            <p class="welcome">
+                                Bienvenu à la polyclinique Fulltang
+                            </p>
+                            <p>
+                                carnet de consultation
+                            </p>
+                            <p class="page-title">
+                                Mr  <%=patient.nom+' '+patient.prenom %>
+                            </p>
+                        </div>
+                        <% if(carnet.length > 0){ %>
+
+                            <% carnet.forEach(i=>{ %>
+
+                                <div class="consultation">
+                                    <div class="consultation-ref">
+                                        <h1>consultation du  <%=i.date.toLocaleDateString() %> (<%=i.personnel.nom %>)</h1>
+                                    </div>
+                                    
+                                    <div class="carnet-bloc">
+                                        <div class="c-theme">
+                                            Parametres
+                                        </div>
+                                        <div class="carnet-row">
+                                            <div>
+                                                <label>Poids (en kg) :</label>
+                                                <p><%=i.parametre.poids %> kg</p>
+                                            </div>
+                                            <div>
+                                                <label>temperature :</label>
+                                                <p> <%=i.parametre.temperature %>° c</p>
+                                            </div>
+                                        </div>
+                                        <div class="carnet-row">
+                                            <div>
+                                                <label>Tension arterielle :</label>
+                                                <p><%=i.parametre.pression_arterielle %></p>
+                                            </div>
+                                            <div>
+                                                <label>groupe sanguin :</label>
+                                                <p><%=i.parametre.groupe_sanguin %></p>
+                                            </div>
+                                        </div>
+                                        <div class="carnet-row">
+                                            <div>
+                                                <label>rhesus :</label>
+                                                <p><%=i.parametre.rhesus %></p>
+                                            </div>
+                                        </div>
+            
+                                    </div>
+            
+                                </div>
+
+                            <%})%>
+                            
+                        <% }else{ %>
+                            <div class="c-vide">
+                                Vide
+                            </div>
+
+                        <% } %>
+        
+                    </div>
+                
+                </div>
+            </div>
+        </div>      
+    </div>
+    <script>
+        // Sélectionner l' élément d'entrée de la température et de la tension
+        const tempInput = document.querySelector('input[name="temperature" ]');
+        const tensionInput = document.querySelector('input[name="tension" ]'); 
+        // Écouter l'événement "input" sur l'élément d'entrée 
+        tempInput.addEventListener('input', function() {
+            const temperature = parseFloat(this.value); 
+            // Vérifier si la température est anormale 
+            if (temperature < 35 || temperature > 38) {
+                // Changer la couleur de fond de la zone de saisie en rouge
+                this.style.backgroundColor = 'red';
+                this.style.color = 'white'
+            } else {
+                // Remettre la couleur de fond par défaut
+                this.style.backgroundColor = '';
+                this.style.color = 'black'
+            }
+        });
+
+        tensionInput.addEventListener('input', function() {
+            const tension = parseFloat(this.value); 
+            // Vérifier si la température est anormale 
+            if (tension < 35 || tension > 38) {
+                // Changer la couleur de fond de la zone de saisie en rouge
+                this.style.backgroundColor = 'red';
+                this.style.color = 'white'
+            } else {
+                // Remettre la couleur de fond par défaut
+                this.style.backgroundColor = '';
+                this.style.color = 'black'
+            }
+        });
+
+        // Récupérer l'élément input de la date
+  const dateInput = document.getElementById('date_rdv');
+  const dateErrorSpan = document.getElementById('date_error');
+
+  // Ajouter un event listener sur le changement de la date
+  dateInput.addEventListener('change', function() {
+    // Récupérer la date saisie
+    const selectedDate = new Date(this.value);
+
+    // Récupérer la date d'aujourd'hui
+    const today = new Date();
+
+    // Vérifier si la date saisie est antérieure à la date d'aujourd'hui
+    if (selectedDate < today) {
+      // Afficher un message d'erreur
+      dateErrorSpan.textContent = "La date doit être supérieure ou égale à aujourd'hui.";
+      // Désactiver le bouton de validation du formulaire
+      document.querySelector('button[type="submit"]').disabled = true;
+    } else {
+      // Masquer le message d'erreur
+      dateErrorSpan.textContent = "";
+      // Réactiver le bouton de validation du formulaire
+      document.querySelector('button[type="submit"]').disabled = false;
+    }
+  });
+    </script>
+</body>
+
+</html>
